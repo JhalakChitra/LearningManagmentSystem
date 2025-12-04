@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/auth/login.dart';
+import 'screens/splashscreen.dart';
 
 void main() {
   runApp(const LMSApp());
@@ -17,7 +18,7 @@ class LMSApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: "Roboto",
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

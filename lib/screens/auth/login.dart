@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'forgotpassword.dart';
-import 'signup.dart'; // Make sure to create this file
+import 'package:pathshala/screens/dashboard/dashboard.dart';
+import 'signup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 const Text("Login to continue your courses"),
-
                 const SizedBox(height: 40),
 
                 // Email
@@ -44,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 // Password
@@ -56,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-
                 const SizedBox(height: 10),
 
                 // Forgot password
@@ -74,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("Forgot Password?"),
                   ),
                 ),
-
                 const SizedBox(height: 30),
 
                 // Login button
@@ -82,9 +79,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Later we add API here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Login clicked")),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DashboardScreen(),
+                        ),
                       );
                     },
                     child: const Text("Login"),
@@ -92,6 +91,60 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 20),
+
+                // ---- Divider OR text ----
+                const Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text("Or"),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // ==== Google SignIn Button ====
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: Image.asset(
+                      "assets/google.png",
+                      height: 24,
+                    ),
+                    onPressed: () {
+                      // TODO: integrate google login
+                    },
+                    label: const Text("Sign in with Google"),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                // ==== Facebook SignIn Button ====
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: Image.asset(
+                      "assets/facebook.png",
+                      height: 24,
+                    ),
+                    onPressed: () {
+                      // TODO: integrate facebook login
+                    },
+                    label: const Text("Sign in with Facebook"),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
 
                 // Sign Up button
                 Row(
