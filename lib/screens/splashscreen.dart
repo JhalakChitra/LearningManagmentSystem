@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathshala/screens/auth/login.dart';
+import 'onboarding/onboardingscreen.dart';
 
 
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
       );
     });
   }
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.deepPurple,
       body: Center(
         child: Text(
-          "Pathshala App",
+          "apni Pathshala",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
       ),
