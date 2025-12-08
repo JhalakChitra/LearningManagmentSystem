@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../home/homescreen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -12,6 +15,54 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  bool loading = false;
+
+  signupUser() async {
+    if (passwordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match!")),
+      );
+      return;
+    }
+
+    setState(() => loading = true);
+
+    try {
+      // Firebase create account
+      UserCredential userCredential =
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      // Save user data in Firestore
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userCredential.user!.uid)
+          .set({
+        "name": nameController.text.trim(),
+        "email": emailController.text.trim(),
+        "createdAt": DateTime.now(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created successfully")),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+
+    setState(() => loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +79,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 "Sign up to start learning!",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 30),
 
-              // Full Name
+              // Name
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
@@ -39,7 +89,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
 
               // Email
@@ -50,7 +99,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
 
               // Password
@@ -62,7 +110,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
 
               // Confirm Password
@@ -74,30 +121,26 @@ class _SignupScreenState extends State<SignupScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 30),
 
-              // Signup Button
+              // Sign Up Btn
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // later: Add API
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Signup clicked")),
-                    );
+                    signupUser();
                   },
-                  child: const Text("Create Account"),
+                  child: loading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Create Account"),
                 ),
               ),
-
               const SizedBox(height: 20),
 
-              // Already have account? Login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Already have an account?"),
+                  const Text("Already have an account? "),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -105,7 +148,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: const Text("Login"),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53006197508",
+    "project_id": "learningapp-ee6cb",
+    "storage_bucket": "learningapp-ee6cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53006197508:android:73b65afc31e691abe36651",
+        "android_client_info": {
+          "package_name": "com.example.pathshala"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr4lajgHCVYgcklggNZ0MjSEn1L5JTtNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

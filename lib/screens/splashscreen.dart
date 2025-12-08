@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pathshala/screens/auth/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'onboarding/onboardingscreen.dart';
-
-
+import 'home/homescreen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -15,25 +12,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    navigate();
+  }
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-      );
-    });
+  navigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => OnboardingScreen()));
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.deepPurple,
-      body: Center(
-        child: Text(
-          "apni Pathshala",
-          style: TextStyle(color: Colors.white, fontSize: 30),
-        ),
-      ),
+    return Scaffold(
+      body: Center(child: Text("Splash Screen", style: TextStyle(fontSize: 24))),
     );
   }
 }

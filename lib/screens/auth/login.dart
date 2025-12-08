@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'forgotpassword.dart';
 import 'signup.dart';
 import 'package:pathshala/screens/home/homescreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +14,32 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  bool loading = false;
+
+  loginUser() async {
+    setState(() => loading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+
+    setState(() => loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
 
-                // Forgot password
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -79,20 +105,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const HomeScreen(),
-                        ),
-                      );
+                      loginUser();
                     },
-                    child: const Text("Login"),
+                    child: loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("Login"),
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
-                // ---- Divider OR text ----
                 const Row(
                   children: [
                     Expanded(child: Divider()),
@@ -103,47 +124,34 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider()),
                   ],
                 ),
-
                 const SizedBox(height: 20),
 
-                // ==== Google SignIn Button ====
+                // Google Button (Optional)
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    icon: Image.asset(
-                      "assets/google.png",
-                      height: 24,
-                    ),
-                    onPressed: () {
-                      // TODO: integrate google login
-                    },
+                    icon: Image.asset("assets/google.png", height: 24),
+                    onPressed: () {},
                     label: const Text("Sign in with Google"),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 15),
 
-                // ==== Facebook SignIn Button ====
+                // Facebook Button (Optional)
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    icon: Image.asset(
-                      "assets/facebook.png",
-                      height: 24,
-                    ),
-                    onPressed: () {
-                      // TODO: integrate facebook login
-                    },
+                    icon: Image.asset("assets/facebook.png", height: 24),
+                    onPressed: () {},
                     label: const Text("Sign in with Facebook"),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 30),
 
                 // Sign Up button
