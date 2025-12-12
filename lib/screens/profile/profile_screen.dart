@@ -1,46 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import '../auth/login.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
-  // ========= BACKEND LOGOUT FUNCTION ========= //
-  Future<void> logout(BuildContext context) async {
-    try {
-      // 1) Read saved token
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString("token");
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
 
-      // 2) API CALL for logout (POST Method)
-      var response = await http.post(
-        Uri.parse("https://your-backend.com/api/logout"),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-      );
+class _ProfileScreenState extends State<ProfileScreen> {
+  User? user = FirebaseAuth.instance.currentUser;
+  String name = "";
+  String email = "";
 
-      // 3) If success remove stored data
-      if (response.statusCode == 200) {
-        await prefs.clear(); // Remove all local data
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails();
+  }
 
-        // 4) Move to Login Page
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          "/login",
-              (route) => false,
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Logout failed!")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+  Future<void> getUserDetails() async {
+    if (user != null) {
+      final data = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user!.uid)
+          .get();
+
+      setState(() {
+        name = data["name"] ?? "";
+        email = data["email"] ?? "";
+      });
     }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    // Firebase logout
+    await FirebaseAuth.instance.signOut();
+
+    // Clear local session data
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("onboarding_seen");
+    await prefs.remove("loggedIn");
+    await prefs.clear(); // full clean (optional but safe)
+
+    // Go to login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+    );
   }
 
   @override
@@ -64,14 +75,16 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "Jhalak Chitranshi",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+            Text(
+              name,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
-            const Text(
-              "jhalak@gmail.com",
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+
+            Text(
+              email,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 30),
 
@@ -81,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {},
             ),
-            Divider(),
+            const Divider(),
 
             ListTile(
               leading: const Icon(Icons.privacy_tip),
@@ -89,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {},
             ),
-            Divider(),
+            const Divider(),
 
             const Spacer(),
 
