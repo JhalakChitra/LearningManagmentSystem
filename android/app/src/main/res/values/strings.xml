@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App name shown on the device -->
+    <string name="app_name">Pathshala</string>
+
+    <!-- ✅ Facebook App ID (from Facebook Developer Console) -->
+    <string name="facebook_app_id">793631563698202</string>
+
+    <!-- ✅ Facebook Client Token (REQUIRED) -->
+    <!-- Get it from: Facebook Developer Console → Settings → Advanced -->
+    <string name="facebook_client_token">5bc4741f8d0949e02fefebd5bd92bfbe</string>
+
+</resources>

@@ -18,13 +18,18 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   bool loading = false;
   bool googleLoading = false;
+  bool facebookLoading = false; // NEW: Facebook loader
 
 
+  // Email validation
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     return emailRegex.hasMatch(email);
   }
 
+  // ------------------------------------------------------------------------------------
+  //                                      LOGIN (EMAIL + PASSWORD)
+  // ------------------------------------------------------------------------------------
   loginUser() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -53,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result == "success") {
       final user = FirebaseAuth.instance.currentUser;
 
-      // Email not verified? → Redirect to verification screen
+      // Email not verified → Show Verify screen
       if (user != null && !user.emailVerified) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -81,8 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-
-
+  // ------------------------------------------------------------------------------------
+  //                               GOOGLE LOGIN
+  // ------------------------------------------------------------------------------------
   _googleLogin() async {
     setState(() => googleLoading = true);
 
@@ -104,12 +110,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
+  // ------------------------------------------------------------------------------------
+  //                                 FACEBOOK LOGIN (NEW)
+  // ------------------------------------------------------------------------------------
+  _facebookLogin() async {
+    setState(() => facebookLoading = true);
+
+    final result = await AuthService().signInWithFacebook();
+
+    setState(() => facebookLoading = false);
+
+    if (result == "success") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else if (result != "Cancelled") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+    }
+  }
 
 
 
-
-
-
+  // ------------------------------------------------------------------------------------
+  //                                      UI
+  // ------------------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text("Login to continue your courses"),
                 const SizedBox(height: 40),
 
+                // ---------------- Email Input ----------------
                 TextField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -139,6 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
+                // ---------------- Password Input ----------------
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -165,10 +194,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 30),
 
+                // ---------------- Login Button ----------------
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: loginUser,
+                    onPressed: loading ? null : loginUser,
                     child: loading
                         ? const CircularProgressIndicator(
                         color: Colors.white)
@@ -177,6 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
+                // ---------------- Divider ----------------
                 const Row(
                   children: [
                     Expanded(child: Divider()),
@@ -189,26 +220,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
+                // ---------------- Google Login Button ----------------
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     icon: Image.asset("assets/google.png", height: 24),
                     onPressed: googleLoading ? null : _googleLogin,
-                    label: const Text("Sign in with Google"),
+                    label: googleLoading
+                        ? const Text("Loading...")
+                        : const Text("Sign in with Google"),
                   ),
                 ),
                 const SizedBox(height: 15),
 
+                // ---------------- Facebook Login Button (UPDATED) ----------------
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     icon: Image.asset("assets/facebook.png", height: 24),
-                    onPressed: () {},
-                    label: const Text("Sign in with Facebook"),
+                    onPressed: facebookLoading ? null : _facebookLogin,
+                    label: facebookLoading
+                        ? const Text("Loading...")
+                        : const Text("Sign in with Facebook"),
                   ),
                 ),
                 const SizedBox(height: 30),
 
+                // ---------------- Sign Up Redirect ----------------
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

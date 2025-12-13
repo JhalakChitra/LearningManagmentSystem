@@ -39,6 +39,7 @@ dependencies:
   cloud_firestore: ^6.1.0
   firebase_app_check: ^0.4.1+2
   google_sign_in: ^6.2.1
+  flutter_facebook_auth: ^6.2.0
   shared_preferences: ^2.3.3   # <-- add this line
 
 

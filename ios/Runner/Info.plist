@@ -45,5 +45,20 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	 <!-- ------------------- FACEBOOK LOGIN ------------------- -->
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>fb793631563698202</string>
+                </array>
+            </dict>
+        </array>
+        <key>FacebookAppID</key>
+        <string>793631563698202</string>
+        <key>FacebookDisplayName</key>
+        <string>Pathshala</string>
 </dict>
 </plist>
